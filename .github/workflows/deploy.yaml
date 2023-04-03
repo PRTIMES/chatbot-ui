@@ -16,28 +16,22 @@ jobs:
     name: Deploy
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Setup Google Cloud
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ secrets.GCLOUD_AUTH_KEY }}
+      - name: Setup Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCLOUD_AUTH_KEY }}
 
-    - name: Configure docker for artifact registry
-      run: |
-        gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+      - name: Configure docker for artifact registry
+        run: |
+          gcloud auth configure-docker asia-northeast1-docker.pkg.dev
 
-    - name: Build
-      run: |
-        docker build -t ${{ secrets.GCLOUD_ARTIFACT_REGISTRY }}/chatbot-ui:latest ./
+      - name: Build
+        run: |
+          docker build -t ${{ secrets.GCLOUD_ARTIFACT_REGISTRY }}/chatbot-ui:latest ./
 
-    - name: Push
-      run: |
-        docker push ${{ secrets.GCLOUD_ARTIFACT_REGISTRY }}/chatbot-ui
-
-    - name: Deploy
-      run: >
-        gcloud run deploy chatbot-ui
-        --image=${{ secrets.GCLOUD_ARTIFACT_REGISTRY }}/chatbot-ui:latest
-        --region=asia-northeast1
+      - name: Push
+        run: |
+          docker push ${{ secrets.GCLOUD_ARTIFACT_REGISTRY }}/chatbot-ui
