@@ -18,11 +18,14 @@ export default async function middleware(req: NextRequest) {
   }
 
   const ip = req.headers.get('x-forwarded-for')?.split(',');
+  const result = {};
+  // @ts-ignore
+  req.headers.forEach((v, k) => (result[v] = k));
   // XFFのうちホワイトリストに含まれるIPと一致するものが一つもなければ 403
   if (!ip || !ip.some((i) => ipWhitelistEnv.includes(i))) {
     return NextResponse.json({
       message: '403 Forbidden',
-      headers: req.headers.get('x-forwarded-for'),
+      headers: result,
       ip,
     });
   }
