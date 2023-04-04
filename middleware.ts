@@ -4,31 +4,22 @@ export const config = {
   matcher: ['/'],
 };
 
-// IP制限を行うミドルウェア
+// BASIC 認証
 export default async function middleware(req: NextRequest) {
-  // 開発環境でスキップ
-  if (process.env.NODE_ENV === 'development') {
-    return NextResponse.next();
+  const authorizationHeader = req.headers.get('authorization')?.split(' ')[1];
+  if (authorizationHeader) {
+    const [user, pass] = atob(authorizationHeader).split(':');
+
+    if (
+      user === process.env.BASIC_AUTH_USER &&
+      pass === process.env.BASIC_AUTH_PASS
+    ) {
+      return NextResponse.next();
+    }
   }
 
-  const ipWhitelistEnv = process.env.IP_WHITELIST?.split(',');
-  // IPホワイトリストの環境変数が設定されいていなければスキップ
-  if (!ipWhitelistEnv) {
-    return NextResponse.next();
-  }
+  const url = req.nextUrl;
+  url.pathname = '/api/unauthorized';
 
-  const ip = req.headers.get('x-forwarded-for')?.split(',');
-  const result = {};
-  // @ts-ignore
-  req.headers.forEach((v, k) => (result[k] = v));
-  // XFFのうちホワイトリストに含まれるIPと一致するものが一つもなければ 403
-  if (!ip || !ip.some((i) => ipWhitelistEnv.includes(i))) {
-    return NextResponse.json({
-      message: '403 Forbidden',
-      headers: result,
-      ip,
-    });
-  }
-
-  return NextResponse.next();
+  return NextResponse.rewrite(url);
 }
