@@ -7,11 +7,13 @@ export const config = {
 // IP ホワイトリストで検証 → 不正であれば BASIC 認証
 export default async function middleware(req: NextRequest) {
   // IP ホワイトリスト検証
-  const ipWhitelist = (process.env.IP_WHITELIST as string).split(',');
-  const reqIps = (req.headers.get('x-forwarded-for') as string).split(', ');
-  // IP ホワイトリストに含まれていれば認証スキップ
-  if (reqIps.some((ip) => ipWhitelist.includes(ip))) {
-    return NextResponse.next();
+  const ipWhitelist = process.env.IP_WHITELIST?.split(',');
+  const reqIps = req.headers.get('x-forwarded-for')?.split(', ');
+  if (ipWhitelist !== undefined && reqIps !== undefined) {
+    // IP ホワイトリストに含まれていれば認証スキップ
+    if (reqIps.some((ip) => ipWhitelist.includes(ip))) {
+      return NextResponse.next();
+    }
   }
 
   // BASIC 認証
