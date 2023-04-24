@@ -312,7 +312,10 @@ export const ChatInput: FC<Props> = ({
           )}
         </div>
       </div>
-      <div className="px-3 pt-2 pb-3 text-center text-[12px] text-black/50 dark:text-white/50 md:px-4 md:pt-3 md:pb-6">
+      <p className="py-2 text-center text-[16px] font-bold text-black/50 dark:text-white/50">
+        【お客様情報や機密情報を絶対に入力しないてください。情報漏洩の可能性があります。】
+      </p>
+      <div className="px-3 pb-3 text-center text-[12px] text-black/50 dark:text-white/50 md:px-4 md:pb-6">
         <a
           href="https://github.com/mckaywrigley/chatbot-ui"
           target="_blank"
