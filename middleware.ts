@@ -6,6 +6,10 @@ export const config = {
 
 // IP ホワイトリストで検証 → 不正であれば BASIC 認証
 export default async function middleware(req: NextRequest) {
+  if (process.env.NODE_ENV === 'development') {
+    return NextResponse.next();
+  }
+
   // IP ホワイトリスト検証
   const ipWhitelist = process.env.IP_WHITELIST?.split(',');
   const reqIps = req.headers.get('x-forwarded-for')?.split(', ');
